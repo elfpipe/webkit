@@ -37,6 +37,13 @@ static const uint32_t kWoff2Signature = 0x774f4632; // "wOF2"
 #endif
 #endif
 
+#ifdef __amigaos4__
+#define	ntohl(x) (x)
+#define	ntohs(x) (x)
+#define	htonl(x) (x)
+#define	htons(x) (x)
+#endif
+
 namespace WebCore {
 
 #if !HAVE(WOFF_SUPPORT)

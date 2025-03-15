@@ -294,7 +294,11 @@ bool OSAllocator::protect(void* address, size_t bytes, bool readable, bool writa
         ASSERT(!readable && !writable);
         protection = PROT_NONE;
     }
+#ifdef __amigaos4__
+    return true;
+#else
     return !mprotect(address, bytes, protection);
+#endif
 }
 
 } // namespace WTF

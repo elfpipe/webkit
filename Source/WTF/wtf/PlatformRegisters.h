@@ -36,6 +36,7 @@
 #include <windows.h>
 #elif OS(OPENBSD)
 typedef ucontext_t mcontext_t;
+#elif defined(__amigaos4__)
 #else
 #include <sys/ucontext.h>
 #endif

@@ -29,7 +29,7 @@
 
 #include <windows.h>
 
-#elif OS(UNIX)
+#elif OS(UNIX) || defined(__amigaos4__)
 
 #include <pthread.h>
 #if HAVE(PTHREAD_NP_H)
@@ -73,7 +73,7 @@ StackBounds StackBounds::currentThreadStackBoundsInternal()
     return newThreadStackBounds(pthread_self());
 }
 
-#elif OS(UNIX)
+#elif OS(UNIX) || defined(__amigaos4__)
 
 #if OS(OPENBSD)
 

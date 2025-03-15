@@ -33,6 +33,10 @@
 #endif
 #include <thread>
 
+#ifdef __amigaos4__
+#include <sched.h>
+#endif
+
 namespace bmalloc {
 
 static inline void yield()

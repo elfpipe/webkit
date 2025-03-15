@@ -137,9 +137,13 @@ endif ()
 
 if (UNIX AND NOT APPLE)
     list(APPEND WTF_SOURCES
-        unix/MemoryPressureHandlerUnix.cpp
         unix/LoggingUnix.cpp
     )
+    if(NOT AMIGA)
+    list(APPEND WTF_SOURCES
+        unix/MemoryPressureHandlerUnix.cpp
+    )
+    endif()
 
     check_function_exists(clock_gettime CLOCK_GETTIME_EXISTS)
     if (NOT CLOCK_GETTIME_EXISTS)

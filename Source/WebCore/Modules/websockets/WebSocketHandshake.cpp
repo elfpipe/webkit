@@ -59,6 +59,10 @@
 #include <wtf/text/WTFString.h>
 #include <wtf/unicode/CharacterNames.h>
 
+#ifdef __amigaos4__
+extern "C" void *memmem(const void *h0, size_t k, const void *n0, size_t l);
+#endif
+
 namespace WebCore {
 
 static String resourceName(const URL& url)

@@ -1,0 +1,50 @@
+(1) First you need a qt6 host build for your linux box.
+
+--
+clone https://github.com/qt/qtbase
+cd qtbase
+mkdir build
+cd build
+cmake -DQT_INSTALL_PREFIX="/usr/local/Qt-6.2.0" ..
+make
+sudo make install
+--
+
+(2) Then you need to build qtbase for amiga.
+
+If you want a static build, you should edit configure-amiga.sh.
+Set BUILD_SHARED_LIBS=OFF for static.
+
+--
+clone https://github.com/elfpipe/amiga-qt6
+cd amiga-qt6
+mkdir build
+cd build
+../amiga-configure.sh
+make
+sudo make install
+--
+
+(3) QtPositioning.
+
+clone https://github.com/qt/QtPositioning
+
+This one should build right out of the box. You need to configure it using the configure script from (2).
+
+--
+
+(4) Now you want to build wekbit.
+
+--
+clone https://github.com/elfpipe/wekbit
+cd wekbit
+mkdir build
+cd build
+../build-amiga.sh
+make
+sudo make install
+--
+
+Note: If you did a static build in step (2), you will have to hand edit the link.txt scripts in three places to complete the build. Sorry!
+Note also: If you want to change your mind about static vs. shared, you should delete your previous install completely before building/installing again.
+Note: This should work with latest adtools + clib4 1.5.0 + libs_ports.

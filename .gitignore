@@ -13,6 +13,9 @@ DerivedData
 .mailmap
 results
 
+build
+static_build
+
 # Ignore Buildstream local files
 /Tools/buildstream/.bst2
 /Tools/buildstream/cache

@@ -102,7 +102,7 @@ public:
         ret.tm_isdst = m_isDST;
 
 #if HAVE(TM_GMTOFF)
-        ret.tm_gmtoff = static_cast<long>(m_utcOffsetInMinute) * static_cast<long>(secondsPerMinute);
+        ret.__tm_gmtoff = static_cast<long>(m_utcOffsetInMinute) * static_cast<long>(secondsPerMinute);
 #endif
 
         return ret;

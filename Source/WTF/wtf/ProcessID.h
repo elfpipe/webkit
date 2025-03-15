@@ -25,7 +25,7 @@
 
 #pragma once
 
-#if OS(UNIX)
+#if OS(UNIX) || defined(__amigaos4__)
 #include <unistd.h>
 #endif
 

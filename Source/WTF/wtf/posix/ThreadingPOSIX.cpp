@@ -61,7 +61,7 @@
 #include <sys/time.h>
 #endif
 
-#if !OS(DARWIN) && OS(UNIX)
+#if !OS(DARWIN) && OS(UNIX) || defined(__amigaos4__)
 
 #include <semaphore.h>
 #include <sys/mman.h>

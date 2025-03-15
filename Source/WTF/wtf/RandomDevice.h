@@ -49,7 +49,7 @@ public:
 
 private:
 #if OS(DARWIN) || OS(FUCHSIA) || OS(WINDOWS)
-#elif OS(UNIX)
+#elif OS(UNIX) || defined(__amigaos4__)
     int m_fd { -1 };
 #else
 #error "This configuration doesn't have a strong source of randomness."

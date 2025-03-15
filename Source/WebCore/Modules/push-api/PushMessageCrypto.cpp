@@ -30,6 +30,10 @@
 #include <wtf/ByteOrder.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 
+#ifdef __amigaos4__
+#define	ntohs(x) (x)
+#endif
+
 namespace WebCore::PushCrypto {
 
 // Arbitrary limit that's larger than the largest payload APNS should ever give us.

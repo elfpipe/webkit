@@ -90,6 +90,10 @@
 #include <windows.h>
 #endif
 
+#ifdef __amigaos4__
+extern "C" time_t timegm(struct tm *tm);
+#endif
+
 namespace WTF {
 
 // FIXME: Should this function go into StringCommon.h or some other header?
@@ -262,10 +266,10 @@ static int32_t calculateUTCOffset()
     localt.tm_yday = 0;
     localt.tm_isdst = 0;
 #if HAVE(TM_GMTOFF)
-    localt.tm_gmtoff = 0;
+    localt.__tm_gmtoff = 0;
 #endif
 #if HAVE(TM_ZONE)
-    localt.tm_zone = 0;
+    localt.__tm_zone = 0;
 #endif
 
 #if HAVE(TIMEGM)
@@ -368,7 +372,7 @@ LocalTimeOffset calculateLocalTimeOffset(double ms, TimeType inputTimeType)
 #if HAVE(TM_GMTOFF)
     tm localTM;
     getLocalTime(&localTime, &localTM);
-    return LocalTimeOffset(localTM.tm_isdst, localTM.tm_gmtoff * msPerSecond);
+    return LocalTimeOffset(localTM.tm_isdst, localTM.__tm_gmtoff * msPerSecond);
 #else
     double dstOffset = calculateDSTOffset(localTime, localToUTCTimeOffset);
     return LocalTimeOffset(dstOffset, localToUTCTimeOffset + dstOffset);

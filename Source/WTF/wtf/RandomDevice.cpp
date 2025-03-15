@@ -29,7 +29,7 @@
 
 #include <stdlib.h>
 
-#if !OS(DARWIN) && !OS(FUCHSIA) && OS(UNIX)
+#if !OS(DARWIN) && !OS(FUCHSIA) && OS(UNIX) || defined(__amigaos4__)
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -51,7 +51,7 @@
 
 namespace WTF {
 
-#if !OS(DARWIN) && !OS(FUCHSIA) && OS(UNIX)
+#if !OS(DARWIN) && !OS(FUCHSIA) && OS(UNIX) || defined(__amigaos4__)
 NEVER_INLINE NO_RETURN_DUE_TO_CRASH static void crashUnableToOpenURandom()
 {
     CRASH();
@@ -91,7 +91,7 @@ void RandomDevice::cryptographicallyRandomValues(unsigned char* buffer, size_t l
     RELEASE_ASSERT(!CCRandomGenerateBytes(buffer, length));
 #elif OS(FUCHSIA)
     zx_cprng_draw(buffer, length);
-#elif OS(UNIX)
+#elif OS(UNIX) || defined(__amigaos4__)
     ssize_t amountRead = 0;
     while (static_cast<size_t>(amountRead) < length) {
         ssize_t currentRead = read(m_fd, buffer + amountRead, length - amountRead);

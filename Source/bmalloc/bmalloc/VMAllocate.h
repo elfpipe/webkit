@@ -145,7 +145,9 @@ inline void vmDeallocate(void* p, size_t vmSize)
 inline void vmRevokePermissions(void* p, size_t vmSize)
 {
     vmValidate(p, vmSize);
+#ifndef __amigaos4__
     mprotect(p, vmSize, PROT_NONE);
+#endif
 }
 
 inline void vmZeroAndPurge(void* p, size_t vmSize, VMTag usage = VMTag::Malloc)
@@ -202,6 +204,8 @@ inline void vmDeallocatePhysicalPages(void* p, size_t vmSize)
     SYSCALL(madvise(p, vmSize, MADV_FREE_REUSABLE));
 #elif BOS(FREEBSD)
     SYSCALL(madvise(p, vmSize, MADV_FREE));
+#elif defined(__amigaos4__)
+    // nothing
 #else
     SYSCALL(madvise(p, vmSize, MADV_DONTNEED));
 #if BOS(LINUX)
@@ -219,6 +223,8 @@ inline void vmAllocatePhysicalPages(void* p, size_t vmSize)
     // For the Darwin platform, we don't need to call madvise(..., MADV_FREE_REUSE)
     // to commit physical memory to back a range of allocated virtual memory.
     // Instead the kernel will commit pages as they are touched.
+#elif defined(__amigaos4__)
+    // nothing
 #else
     SYSCALL(madvise(p, vmSize, MADV_NORMAL));
 #if BOS(LINUX)

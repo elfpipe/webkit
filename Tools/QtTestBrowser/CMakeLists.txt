@@ -83,3 +83,7 @@ set_target_properties(QtTestBrowser PROPERTIES FOLDER "Tools" AUTOMOC ON)
 if (${CMAKE_BUILD_TYPE} MATCHES "Release")
     set_target_properties(QtTestBrowser PROPERTIES WIN32_EXECUTABLE ON)
 endif ()
+
+if(AMIGA)
+    target_link_libraries(QtTestBrowser auto)
+endif()

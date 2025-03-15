@@ -55,6 +55,9 @@ inline size_t systemPageSize()
     return system_info.dwPageSize;
 }
 
+#elif defined(__amigaos4__)
+
+inline size_t systemPageSize() { return 4096; }
 #endif
 
 size_t pageSize()

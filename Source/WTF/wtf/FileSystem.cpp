@@ -356,6 +356,10 @@ bool MappedFileData::mapFileHandle(PlatformFileHandle handle, FileOpenMode openM
 #endif
     }
 
+#ifdef __amigaos4__
+#define MAP_FILE 0x00
+#endif
+
     void* data = mmap(0, size, pageProtection, MAP_FILE | (mapMode == MappedFileMode::Shared ? MAP_SHARED : MAP_PRIVATE), fd, 0);
 
     if (data == MAP_FAILED) {
@@ -465,8 +469,11 @@ void finalizeMappedFileData(MappedFileData& mappedFileData, size_t bytesSize)
     VirtualProtect(map, bytesSize, FILE_MAP_READ, &oldProtection);
     FlushViewOfFile(map, bytesSize);
 #else
+
+#ifndef __amigaos4__
     // Drop the write permission.
     mprotect(map, bytesSize, PROT_READ);
+#endif
 
     // Flush (asynchronously) to file, turning this into clean memory.
     msync(map, bytesSize, MS_ASYNC);

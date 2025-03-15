@@ -172,6 +172,10 @@ if (HarfBuzz_ICU_LIBRARY AND NOT TARGET HarfBuzz::ICU)
         INTERFACE_COMPILE_OPTIONS "${HarfBuzz_ICU_COMPILE_OPTIONS}"
         INTERFACE_INCLUDE_DIRECTORIES "${HarfBuzz_ICU_INCLUDE_DIR}"
     )
+    if(AMIGA)
+        set_target_properties(HarfBuzz::ICU PROPERTIES
+            INTERFACE_LINK_LIBRARIES icuuc)
+    endif()
 endif ()
 
 mark_as_advanced(

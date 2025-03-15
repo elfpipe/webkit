@@ -207,18 +207,18 @@ install(FILES
 )
 
 # We need to install separate config files for debug and release, so use "Code" component
-install(EXPORT WebKitTargets
-    FILE WebKitTargets.cmake
-    NAMESPACE Qt6::
-    DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/Qt6WebKit"
-    COMPONENT Code
-)
-install(EXPORT Qt6WebKitWidgetsTargets
-    FILE Qt6WebKitWidgetsTargets.cmake
-    NAMESPACE Qt6::
-    DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/Qt6WebKitWidgets"
-    COMPONENT Code
-)
+# install(EXPORT WebKitTargets
+#     FILE WebKitTargets.cmake
+#     NAMESPACE Qt6::
+#     DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/Qt6WebKit"
+#     COMPONENT Code
+# )
+# install(EXPORT Qt6WebKitWidgetsTargets
+#     FILE Qt6WebKitWidgetsTargets.cmake
+#     NAMESPACE Qt6::
+#     DESTINATION "${KDE_INSTALL_CMAKEPACKAGEDIR}/Qt6WebKitWidgets"
+#     COMPONENT Code
+# )
 
 # Documentation
 
