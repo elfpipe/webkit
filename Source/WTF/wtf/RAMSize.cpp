@@ -35,6 +35,8 @@
 #include <sys/sysinfo.h>
 #elif OS(UNIX)
 #include <unistd.h>
+#elif defined(__amigaos4__)
+#include <proto/exec.h>
 #endif // OS(LINUX) || OS(FREEBSD) || OS(UNIX)
 #else
 #include <bmalloc/bmalloc.h>
@@ -68,6 +70,8 @@ static size_t computeRAMSize()
     long pages = sysconf(_SC_PHYS_PAGES);
     long pageSize = sysconf(_SC_PAGE_SIZE);
     return pages * pageSize;
+#elif defined(__amigaos4__)
+    return IExec->AvailMem(MEMF_TOTAL);
 #else
 #error "Missing a platform specific way of determining the available RAM"
 #endif // OS(LINUX) || OS(FREEBSD) || OS(UNIX)

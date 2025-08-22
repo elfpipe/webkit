@@ -6,12 +6,14 @@
 if (NOT HAS_RUN_WEBKIT_COMMON)
     set(HAS_RUN_WEBKIT_COMMON TRUE)
 
-    if (NOT CMAKE_BUILD_TYPE)
+    if (AMIGA)
+        message(STATUS "Only a crazy person would build this project as anything else than a Release on a 32-bit system.")
+        set(CMAKE_BUILD_TYPE "Release")
+    elseif (NOT CMAKE_BUILD_TYPE)
         message(WARNING "No CMAKE_BUILD_TYPE value specified, defaulting to RelWithDebInfo.")
         set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build." FORCE)
-    else ()
-        message(STATUS "The CMake build type is: ${CMAKE_BUILD_TYPE}")
     endif ()
+    message(STATUS "The CMake build type is: ${CMAKE_BUILD_TYPE}")
 
     # Exporting compile commands is available for Ninja and Makefile generators
     # See https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html

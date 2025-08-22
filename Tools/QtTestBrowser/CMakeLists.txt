@@ -42,6 +42,11 @@ set(QtTestBrowser_SYSTEM_INCLUDE_DIRECTORIES
     ${Qt6StateMachine_INCLUDE_DIRS}
 )
 
+message(STATUS "=========STATIC_LIB_DEPS : ${STATIC_LIB_DEPENDENCIES}")
+# if(AMIGA)
+#     list(APPEND STATIC_LIB_DEPENDENCIES -lxml2 -lsqlite3 -lz -lxslt)
+# endif()
+
 set(QtTestBrowser_LIBRARIES
     ${Qt6Gui_LIBRARIES}
     ${Qt6Network_LIBRARIES}
@@ -51,7 +56,9 @@ set(QtTestBrowser_LIBRARIES
     ${Qt6StateMachine_LIBRARIES}
     WebKitWidgets
     ${STATIC_LIB_DEPENDENCIES}
+    ${WebCore_LIBRARIES}
 )
+
 
 qt_add_resources(QtTestBrowser_SOURCES
     QtTestBrowser.qrc
@@ -79,6 +86,7 @@ include_directories(SYSTEM ${QtTestBrowser_SYSTEM_INCLUDE_DIRECTORIES})
 add_executable(QtTestBrowser ${QtTestBrowser_SOURCES})
 target_link_libraries(QtTestBrowser ${QtTestBrowser_LIBRARIES})
 set_target_properties(QtTestBrowser PROPERTIES FOLDER "Tools" AUTOMOC ON)
+target_link_options(QtTestBrowser PRIVATE "LINKER:--allow-multiple-definition")
 
 if (${CMAKE_BUILD_TYPE} MATCHES "Release")
     set_target_properties(QtTestBrowser PROPERTIES WIN32_EXECUTABLE ON)

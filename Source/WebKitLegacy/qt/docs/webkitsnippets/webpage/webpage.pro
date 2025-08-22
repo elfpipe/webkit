@@ -1,3 +1,2 @@
-CONFIG += console
-QT += webkitwidgets
+QT += webkitwidgets printsupport widgets
 SOURCES = main.cpp
