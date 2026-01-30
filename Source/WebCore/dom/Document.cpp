@@ -650,7 +650,9 @@ Document::Document(LocalFrame* frame, const Settings& settings, const URL& url, 
     , m_isNonRenderedPlaceholder(constructionFlags.contains(ConstructionFlag::NonRenderedPlaceholder))
     , m_frameIdentifier(frame ? std::optional(frame->frameID()) : std::nullopt)
 {
+    printf("::Document() (1)\n");
     addToDocumentsMap();
+    printf("::Document() (2)\n");
 
     // We depend on the url getting immediately set in subframes, but we
     // also depend on the url NOT getting immediately set in opened windows.
@@ -659,23 +661,34 @@ Document::Document(LocalFrame* frame, const Settings& settings, const URL& url, 
     // FIXME: Can/should we unify this behavior?
     if ((frame && frame->ownerElement()) || !url.isEmpty())
         setURL(url);
+    printf("::Document() (3)\n");
 
     protectedCachedResourceLoader()->setDocument(this);
+    printf("::Document() (4)\n");
 
     resetLinkColor();
+    printf("::Document() (5)\n");
     resetVisitedLinkColor();
+    printf("::Document() (6)\n");
     resetActiveLinkColor();
+    printf("::Document() (7)\n");
 
     initSecurityContext();
+    printf("::Document() (8)\n");
     initDNSPrefetch();
+    printf("::Document() (9)\n");
 
     protectedFontSelector()->registerForInvalidationCallbacks(*this);
+    printf("::Document() (10)\n");
 
     for (auto& nodeListAndCollectionCount : m_nodeListAndCollectionCounts)
         nodeListAndCollectionCount = 0;
+    printf("::Document() (11)\n");
 
     InspectorInstrumentation::addEventListenersToNode(*this);
+    printf("::Document() (12)\n");
     setStorageBlockingPolicy(m_settings->storageBlockingPolicy());
+    printf("::Document() (13)\n");
 }
 
 void Document::createNewIdentifier()

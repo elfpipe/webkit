@@ -273,6 +273,17 @@ if (QT_CORE_TYPE MATCHES STATIC)
     set(MACOS_BUILD_FRAMEWORKS OFF)
 endif ()
 
+# For Amiga rtld, we need to use a single RPATH entry only
+# Disable automatic RPATH handling and rely on manual configuration
+if (AMIGA)
+    # Tell CMake to not add rpaths automatically from linked libraries
+    set(CMAKE_BUILD_RPATH "")
+    set(CMAKE_INSTALL_RPATH "/qt6-amiga/lib")
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    message(STATUS "Amiga RPATH configuration: Using single RPATH entry /qt6-amiga/lib")
+endif ()
+
 # static icu libraries on windows are build with 's' prefix
 if (QT_STATIC_BUILD AND MSVC)
     set(ICU_LIBRARY_PREFIX "s")

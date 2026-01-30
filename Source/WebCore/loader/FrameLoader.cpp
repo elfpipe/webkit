@@ -363,19 +363,30 @@ void FrameLoader::detachFromAllOpenedFrames()
 
 void FrameLoader::init()
 {
+    printf("FrameLoader::init (1) \n");
     // This somewhat odd set of steps gives the frame an initial empty document.
     setPolicyDocumentLoader(m_client->createDocumentLoader(ResourceRequest(URL({ }, emptyString())), SubstituteData()));
+    printf("FrameLoader::init (2) \n");
     setProvisionalDocumentLoader(m_policyDocumentLoader.copyRef());
+    printf("FrameLoader::init (3) \n");
     protectedProvisionalDocumentLoader()->startLoadingMainResource();
+    printf("FrameLoader::init (4) \n");
     setPolicyDocumentLoader(nullptr);
+    printf("FrameLoader::init (5) \n");
 
     Ref frame = m_frame.get();
+    printf("FrameLoader::init (6) \n");
     Ref document { *m_frame->document() };
+    printf("FrameLoader::init (7) \n");
     document->cancelParsing();
+    printf("FrameLoader::init (8) \n");
     m_stateMachine.advanceTo(FrameLoaderStateMachine::DisplayingInitialEmptyDocument);
+    printf("FrameLoader::init (9) \n");
 
     m_networkingContext = m_client->createNetworkingContext();
+    printf("FrameLoader::init (10) \n");
     m_progressTracker = makeUnique<FrameProgressTracker>(frame);
+    printf("FrameLoader::init (11) \n");
 }
 
 void FrameLoader::initForSynthesizedDocument(const URL&)

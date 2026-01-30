@@ -457,60 +457,86 @@ void DocumentLoader::notifyFinished(CachedResource& resource, const NetworkLoadM
 
 void DocumentLoader::finishedLoading()
 {
+    printf("finishedLoading() (1)\n");
     // There is a bug in CFNetwork where callbacks can be dispatched even when loads are deferred.
     // See <rdar://problem/6304600> for more details.
 #if !USE(CF)
     ASSERT(!m_frame->page()->defersLoading() || frameLoader()->stateMachine().creatingInitialEmptyDocument() || InspectorInstrumentation::isDebuggerPaused(m_frame.get()));
 #endif
+    printf("finishedLoading() (2)\n");
 
     Ref<DocumentLoader> protectedThis(*this);
+    printf("finishedLoading() (3)\n");
 
     if (m_identifierForLoadWithoutResourceLoader) {
+    printf("finishedLoading() (4)\n");
         // A didFinishLoading delegate might try to cancel the load (despite it
         // being finished). Clear m_identifierForLoadWithoutResourceLoader
         // before calling dispatchDidFinishLoading so that we don't later try to
         // cancel the already-finished substitute load.
         NetworkLoadMetrics emptyMetrics;
+    printf("finishedLoading() (5)\n");
         ResourceLoaderIdentifier identifier = m_identifierForLoadWithoutResourceLoader;
+    printf("finishedLoading() (6)\n");
         m_identifierForLoadWithoutResourceLoader = { };
         frameLoader()->notifier().dispatchDidFinishLoading(this, identifier, emptyMetrics, nullptr);
+    printf("finishedLoading() (7)\n");
     }
 
+    printf("finishedLoading() (8)\n");
     maybeFinishLoadingMultipartContent();
+    printf("finishedLoading() (9)\n");
 
     timing().markEndTime();
+    printf("finishedLoading() (10)\n");
     
     commitIfReady();
+    printf("finishedLoading() (11)\n");
     if (!frameLoader())
         return;
+    printf("finishedLoading() (12)\n");
 
     if (!maybeCreateArchive()) {
+    printf("finishedLoading() (13)\n");
         // If this is an empty document, it will not have actually been created yet. Commit dummy data so that
         // DocumentWriter::begin() gets called and creates the Document.
         if (!m_gotFirstByte)
             commitData(SharedBuffer::create());
+    printf("finishedLoading() (14)\n");
 
         if (!frameLoader())
             return;
+    printf("finishedLoading() (15)\n");
         frameLoader()->client().finishedLoading(this);
+    printf("finishedLoading() (16)\n");
     }
 
+    printf("finishedLoading() (17)\n");
     m_writer.end();
+    printf("finishedLoading() (18)\n");
     if (!m_mainDocumentError.isNull())
         return;
+    printf("finishedLoading() (19)\n");
     clearMainResourceLoader();
+    printf("finishedLoading() (20)\n");
     if (!frameLoader())
         return;
+    printf("finishedLoading() (21)\n");
     if (!frameLoader()->stateMachine().creatingInitialEmptyDocument())
         frameLoader()->checkLoadComplete();
+    printf("finishedLoading() (22)\n");
 
     // If the document specified an application cache manifest, it violates the author's intent if we store it in the memory cache
     // and deny the appcache the chance to intercept it in the future, so remove from the memory cache.
     if (m_frame) {
+    printf("finishedLoading() (23)\n");
         if (m_mainResource && m_frame->document()->hasManifest())
             MemoryCache::singleton().remove(*m_mainResource);
+    printf("finishedLoading() (24)\n");
     }
+    printf("finishedLoading() (25)\n");
     m_applicationCacheHost->finishedLoadingMainResource();
+    printf("finishedLoading() (26   )\n");
 }
 
 static bool isRedirectToGetAfterPost(const ResourceRequest& oldRequest, const ResourceRequest& newRequest)
@@ -1257,110 +1283,165 @@ static inline bool shouldUseActiveServiceWorkerFromParent(const Document& docume
 
 void DocumentLoader::commitData(const SharedBuffer& data)
 {
+    printf("commitData() (1)\n");
     if (!m_gotFirstByte) {
+    printf("commitData() (2)\n");
         m_gotFirstByte = true;
         bool hasBegun = m_writer.begin(documentURL(), false, nullptr, m_resultingClientId, &triggeringAction());
+    printf("commitData() (3)\n");
         if (!hasBegun)
             return;
+    printf("commitData() (4)\n");
 
         m_writer.setDocumentWasLoadedAsPartOfNavigation();
+    printf("commitData() (5)\n");
 
         auto* documentOrNull = m_frame ? m_frame->document() : nullptr;
+    printf("commitData() (6)\n");
         if (!documentOrNull)
             return;
+    printf("commitData() (7)\n");
         auto& document = *documentOrNull;
 
         if (SecurityPolicy::allowSubstituteDataAccessToLocal() && m_originalSubstituteDataWasValid) {
+    printf("commitData() (8)\n");
             // If this document was loaded with substituteData, then the document can
             // load local resources. See https://bugs.webkit.org/show_bug.cgi?id=16756
             // and https://bugs.webkit.org/show_bug.cgi?id=19760 for further
             // discussion.
             document.securityOrigin().grantLoadLocalResources();
+    printf("commitData() (9)\n");
         }
 
+    printf("commitData() (10)\n");
         if (frameLoader()->stateMachine().creatingInitialEmptyDocument())
             return;
+    printf("commitData() (11)\n");
 
 #if ENABLE(WEB_ARCHIVE) || ENABLE(MHTML)
         if (m_archive && m_archive->shouldOverrideBaseURL())
             document.setBaseURLOverride(m_archive->mainResource()->url());
 #endif
+    printf("commitData() (12)\n");
         if (m_canUseServiceWorkers) {
+    printf("commitData() (13)\n");
             if (!document.securityOrigin().isOpaque()) {
+    printf("commitData() (14)\n");
                 if (m_serviceWorkerRegistrationData && m_serviceWorkerRegistrationData->activeWorker) {
+    printf("commitData() (15)\n");
                     document.setActiveServiceWorker(ServiceWorker::getOrCreate(document, WTFMove(m_serviceWorkerRegistrationData->activeWorker.value())));
+    printf("commitData() (16)\n");
                     m_serviceWorkerRegistrationData = { };
+    printf("commitData() (17)\n");
                 } else if (auto* parent = document.parentDocument()) {
+    printf("commitData() (18)\n");
                     if (shouldUseActiveServiceWorkerFromParent(document, *parent))
                         document.setActiveServiceWorker(parent->activeServiceWorker());
+    printf("commitData() (19)\n");
                 }
+    printf("commitData() (20)\n");
             } else if (m_resultingClientId) {
+    printf("commitData() (21)\n");
                 // In case document has an opaque origin, say due to sandboxing, we should have created a new context, let's create a new identifier instead.
                 if (document.securityOrigin().isOpaque())
                     document.createNewIdentifier();
+    printf("commitData() (22)\n");
             }
 
+    printf("commitData() (23)\n");
             if (m_frame->document()->activeServiceWorker() || document.url().protocolIsInHTTPFamily() || (document.page() && document.page()->isServiceWorkerPage()) || (document.parentDocument() && shouldUseActiveServiceWorkerFromParent(document, *document.parentDocument())))
                 document.setServiceWorkerConnection(&ServiceWorkerProvider::singleton().serviceWorkerConnection());
+    printf("commitData() (24)\n");
 
             if (m_resultingClientId) {
+    printf("commitData() (25)\n");
                 if (m_resultingClientId != document.identifier())
                     unregisterReservedServiceWorkerClient();
+    printf("commitData() (26)\n");
                 scriptExecutionContextIdentifierToLoaderMap().remove(m_resultingClientId);
+    printf("commitData() (27)\n");
                 m_resultingClientId = { };
+    printf("commitData() (28)\n");
             }
+    printf("commitData() (29)\n");
         }
+    printf("commitData() (30)\n");
         // Call receivedFirstData() exactly once per load. We should only reach this point multiple times
         // for multipart loads, and FrameLoader::isReplacing() will be true after the first time.
         if (!isMultipartReplacingLoad())
             frameLoader()->receivedFirstData();
+    printf("commitData() (31)\n");
 
         // The load could be canceled under receivedFirstData(), which makes delegate calls and even sometimes dispatches DOM events.
         if (!isLoading())
             return;
 
+    printf("commitData() (32)\n");
         if (auto* window = document.domWindow()) {
+    printf("commitData() (33)\n");
             window->prewarmLocalStorageIfNecessary();
+    printf("commitData() (34)\n");
 
             if (m_mainResource) {
+    printf("commitData() (35)\n");
                 auto* metrics = m_response.deprecatedNetworkLoadMetricsOrNull();
+    printf("commitData() (36)\n");
                 window->performance().addNavigationTiming(*this, document, *m_mainResource, timing(), metrics ? *metrics : NetworkLoadMetrics::emptyMetrics());
+    printf("commitData() (37)\n");
             }
+    printf("commitData() (38)\n");
         }
+    printf("commitData() (39)\n");
 
         DocumentWriter::IsEncodingUserChosen userChosen;
+    printf("commitData() (40)\n");
         String encoding;
         if (overrideEncoding().isNull()) {
+    printf("commitData() (41)\n");
             userChosen = DocumentWriter::IsEncodingUserChosen::No;
             encoding = response().textEncodingName();
+    printf("commitData() (42)\n");
 #if ENABLE(WEB_ARCHIVE) || ENABLE(MHTML)
             if (m_archive && m_archive->shouldUseMainResourceEncoding())
                 encoding = m_archive->mainResource()->textEncoding();
 #endif
+    printf("commitData() (43)\n");
         } else {
+    printf("commitData() (44)\n");
             userChosen = DocumentWriter::IsEncodingUserChosen::Yes;
             encoding = overrideEncoding();
+    printf("commitData() (45)\n");
         }
+    printf("commitData() (46)\n");
 
         m_writer.setEncoding(encoding, userChosen);
+    printf("commitData() (47)\n");
     }
 
+    printf("commitData() (48)\n");
 #if ENABLE(CONTENT_EXTENSIONS)
     auto& extensionStyleSheets = m_frame->document()->extensionStyleSheets();
+    printf("commitData() (49)\n");
 
     for (auto& pendingStyleSheet : m_pendingNamedContentExtensionStyleSheets)
         extensionStyleSheets.maybeAddContentExtensionSheet(pendingStyleSheet.key, *pendingStyleSheet.value);
+    printf("commitData() (50)\n");
     for (auto& pendingSelectorEntry : m_pendingContentExtensionDisplayNoneSelectors) {
+    printf("commitData() (51)\n");
         for (const auto& pendingSelector : pendingSelectorEntry.value)
             extensionStyleSheets.addDisplayNoneSelector(pendingSelectorEntry.key, pendingSelector.first, pendingSelector.second);
+    printf("commitData() (52)\n");
     }
 
+    printf("commitData() (53)\n");
     m_pendingNamedContentExtensionStyleSheets.clear();
     m_pendingContentExtensionDisplayNoneSelectors.clear();
 #endif
 
+    printf("commitData() (54)\n");
     ASSERT(m_frame->document()->parsing());
     m_writer.addData(data);
+    printf("commitData() (55)\n");
 }
 
 void DocumentLoader::dataReceived(CachedResource& resource, const SharedBuffer& buffer)
@@ -2035,29 +2116,46 @@ bool DocumentLoader::isMultipartReplacingLoad() const
 
 bool DocumentLoader::maybeLoadEmpty()
 {
+    printf("maybeLoadEmpty() (1) m_substituteData.isValid() == %d, m_request.url().isEmpty() == %d\n", m_substituteData.isValid(), m_request.url().isEmpty());
     bool shouldLoadEmpty = !m_substituteData.isValid() && (m_request.url().isEmpty() || LegacySchemeRegistry::shouldLoadURLSchemeAsEmptyDocument(m_request.url().protocol()));
+    printf("maybeLoadEmpty() (2)\n");
     if (!shouldLoadEmpty && !frameLoader()->client().representationExistsForURLScheme(m_request.url().protocol()))
         return false;
 
+    printf("maybeLoadEmpty() (3)\n");
     if (m_request.url().isEmpty() && !frameLoader()->stateMachine().creatingInitialEmptyDocument()) {
+    printf("maybeLoadEmpty() (4)\n");
         m_request.setURL(aboutBlankURL());
+    printf("maybeLoadEmpty() (5)\n");
         if (isLoadingMainResource())
             frameLoader()->client().dispatchDidChangeProvisionalURL();
+    printf("maybeLoadEmpty() (6)\n");
     }
 
+    printf("maybeLoadEmpty() (7) shouldLoadEmpty == %d\n", shouldLoadEmpty);
     String mimeType = shouldLoadEmpty ? "text/html"_s : frameLoader()->client().generatedMIMETypeForURLScheme(m_request.url().protocol());
+    printf("maybeLoadEmpty() (8)\n");
     m_response = ResourceResponse(m_request.url(), mimeType, 0, "UTF-8"_s);
+    printf("maybeLoadEmpty() (9)\n");
 
     if (!frameLoader()->stateMachine().isDisplayingInitialEmptyDocument()) {
+    printf("maybeLoadEmpty() (10)\n");
         if (auto coopEnforcementResult = doCrossOriginOpenerHandlingOfResponse(m_response)) {
+    printf("maybeLoadEmpty() (11)\n");
             m_responseCOOP = coopEnforcementResult->crossOriginOpenerPolicy;
+    printf("maybeLoadEmpty() (12)\n");
             if (coopEnforcementResult->needsBrowsingContextGroupSwitch)
                 frameLoader()->switchBrowsingContextsGroup();
+    printf("maybeLoadEmpty() (13)\n");
         }
+    printf("maybeLoadEmpty() (14)\n");
     }
+    printf("maybeLoadEmpty() (15)\n");
 
     SetForScope isInFinishedLoadingOfEmptyDocument { m_isInFinishedLoadingOfEmptyDocument, true };
+    printf("maybeLoadEmpty() (16)\n");
     finishedLoading();
+    printf("maybeLoadEmpty() (17)\n");
     return true;
 }
 
@@ -2102,8 +2200,13 @@ static bool shouldCancelLoadingAboutURL(const URL& url)
     return true;
 }
 
+#if RELEASE_LOG_DISABLED
+#error hej
+#endif
+
 void DocumentLoader::startLoadingMainResource()
 {
+    printf("startLoadingMainResource() (1)\n");
     m_canUseServiceWorkers = canUseServiceWorkers(m_frame.get());
     m_mainDocumentError = ResourceError();
     timing().markStartTime();
@@ -2112,16 +2215,19 @@ void DocumentLoader::startLoadingMainResource()
     m_loadingMainResource = true;
 
     Ref<DocumentLoader> protectedThis(*this);
+    printf("startLoadingMainResource() (2)\n");
 
     if (shouldCancelLoadingAboutURL(m_request.url())) {
         cancelMainResourceLoad(frameLoader()->client().cannotShowURLError(m_request));
         return;
     }
+    printf("startLoadingMainResource() (3)\n");
 
     if (maybeLoadEmpty()) {
         DOCUMENTLOADER_RELEASE_LOG("startLoadingMainResource: Returning empty document");
         return;
     }
+    printf("startLoadingMainResource() (4)\n");
 
 #if ENABLE(CONTENT_FILTERING)
     // Always filter in WK1
@@ -2130,14 +2236,17 @@ void DocumentLoader::startLoadingMainResource()
         m_contentFilter = !m_substituteData.isValid() ? ContentFilter::create(*this) : nullptr;
 #endif
     
+    printf("startLoadingMainResource() (5)\n");
     
     // Make sure we re-apply the user agent to the Document's ResourceRequest upon reload in case the embedding
     // application has changed it, by clearing the previous user agent value here and applying the new value in CachedResourceLoader.
     m_request.clearHTTPUserAgent();
+    printf("startLoadingMainResource() (6)\n");
 
     ASSERT(timing().startTime());
 
     willSendRequest(ResourceRequest(m_request), ResourceResponse(), [this, protectedThis = WTFMove(protectedThis)] (ResourceRequest&& request) mutable {
+    printf("startLoadingMainResource() (7)\n");
         request.setRequester(ResourceRequestRequester::Main);
 
         m_request = request;
@@ -2148,11 +2257,13 @@ void DocumentLoader::startLoadingMainResource()
             DOCUMENTLOADER_RELEASE_LOG("startLoadingMainResource: Load canceled after willSendRequest");
             return;
         }
+    printf("startLoadingMainResource() (8)\n");
 
         // If this is a reload the cache layer might have made the previous request conditional. DocumentLoader can't handle 304 responses itself.
         request.makeUnconditional();
 
         DOCUMENTLOADER_RELEASE_LOG("startLoadingMainResource: Starting load");
+    printf("startLoadingMainResource() (9)\n");
 
         if (m_applicationCacheHost->canLoadMainResource(request) || m_substituteData.isValid()) {
             auto url = request.url();
@@ -2165,6 +2276,7 @@ void DocumentLoader::startLoadingMainResource()
                     DOCUMENTLOADER_RELEASE_LOG("startLoadingMainResource callback: Load canceled because no frame");
                     return;
                 }
+    printf("startLoadingMainResource() (10)\n");
 
                 if (registrationData)
                     m_serviceWorkerRegistrationData = makeUnique<ServiceWorkerRegistrationData>(WTFMove(*registrationData));
@@ -2173,17 +2285,22 @@ void DocumentLoader::startLoadingMainResource()
                     DOCUMENTLOADER_RELEASE_LOG("startLoadingMainResource callback: Load canceled because of substitute data");
                     return;
                 }
+    printf("startLoadingMainResource() (11)\n");
 
                 if (!m_serviceWorkerRegistrationData && this->tryLoadingRequestFromApplicationCache()) {
                     DOCUMENTLOADER_RELEASE_LOG("startLoadingMainResource callback: Loaded from Application Cache");
                     return;
+    printf("startLoadingMainResource() (12)\n");
                 }
                 this->loadMainResource(WTFMove(request));
+    printf("startLoadingMainResource() (13)\n");
             });
             return;
         }
         loadMainResource(WTFMove(request));
+    printf("startLoadingMainResource() (14)\n");
     });
+    printf("startLoadingMainResource() (15)\n");
 }
 
 void DocumentLoader::unregisterReservedServiceWorkerClient()

@@ -57,7 +57,9 @@ int main(int argc, char *argv[])
 //! [1]
 Thumbnailer::Thumbnailer(const QUrl &url)
 {
+    printf("loading...\n");
     page.mainFrame()->load(url);
+    printf("loading OK!\n");
     connect(&page, SIGNAL(loadFinished(bool)),
         this, SLOT(render()));
 }
@@ -66,6 +68,7 @@ Thumbnailer::Thumbnailer(const QUrl &url)
 //! [2]
 void Thumbnailer::render()
 {
+    printf("render...\n");
     page.setViewportSize(page.mainFrame()->contentsSize());
     QImage image(page.viewportSize(), QImage::Format_ARGB32);
     QPainter painter(&image);

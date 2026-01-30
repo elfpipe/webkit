@@ -157,69 +157,100 @@ Ref<Document> DOMImplementation::createDocument(const String& contentType, Local
     // This is internal, not a DOM API. Maybe we should put it in a new class called DocumentFactory,
     // because of the analogy with HTMLElementFactory.
 
+    printf("DOMI::createDocument() (1)\n");
     // Plug-ins cannot take over for HTML, XHTML, plain text, or non-PDF images.
-    if (equalLettersIgnoringASCIICase(contentType, "text/html"_s))
-        return HTMLDocument::create(frame, settings, url, documentIdentifier);
+    // if (equalLettersIgnoringASCIICase(contentType, "text/html"_s))
+    bool result1 = equalLettersIgnoringASCIICase(contentType, "text/html"_s);
+    printf("equalLetters == %d\n", result1);
+    if(result1) {
+        auto result2 = HTMLDocument::create(frame, settings, url, documentIdentifier);
+        printf("Returned from HTMLDocument::create()\n");
+        return result2;
+    }
+    printf("DOMI::createDocument() (2)\n");
     if (equalLettersIgnoringASCIICase(contentType, "application/xhtml+xml"_s))
         return XMLDocument::createXHTML(frame, settings, url);
+    printf("DOMI::createDocument() (3)\n");
     if (equalLettersIgnoringASCIICase(contentType, "text/plain"_s))
         return TextDocument::create(frame, settings, url, documentIdentifier);
+    printf("DOMI::createDocument() (4)\n");
 
 #if ENABLE(PDFJS)
     if (frame && settings.pdfJSViewerEnabled() && MIMETypeRegistry::isPDFMIMEType(contentType))
         return PDFDocument::create(*frame, url);
 #endif
+    printf("DOMI::createDocument() (5)\n");
 
     bool isImage = MIMETypeRegistry::isSupportedImageMIMEType(contentType);
+    printf("DOMI::createDocument() (6)\n");
     if (frame && isImage && !MIMETypeRegistry::isPDFOrPostScriptMIMEType(contentType))
         return ImageDocument::create(*frame, url);
+    printf("DOMI::createDocument() (7)\n");
 
     // The "image documents for subframe PDFs" mode will override a PDF plug-in.
     if (frame && !frame->isMainFrame() && MIMETypeRegistry::isPDFMIMEType(contentType) && frame->settings().useImageDocumentForSubframePDF())
         return ImageDocument::create(*frame, url);
+    printf("DOMI::createDocument() (8)\n");
 
 #if ENABLE(VIDEO)
     MediaEngineSupportParameters parameters;
+    printf("DOMI::createDocument() (9)\n");
     parameters.type = ContentType { contentType };
     parameters.url = url;
+    printf("DOMI::createDocument() (10)\n");
     if (MediaPlayer::supportsType(parameters) != MediaPlayer::SupportsType::IsNotSupported)
         return MediaDocument::create(frame, settings, url);
 #endif
+    printf("DOMI::createDocument() (11)\n");
 
 #if ENABLE(MODEL_ELEMENT)
     if (MIMETypeRegistry::isUSDMIMEType(contentType) && DeprecatedGlobalSettings::modelDocumentEnabled())
         return ModelDocument::create(frame, settings, url);
 #endif
+    printf("DOMI::createDocument() (12)\n");
 
 #if ENABLE(FTPDIR)
     if (equalLettersIgnoringASCIICase(contentType, "application/x-ftp-directory"_s))
         return FTPDirectoryDocument::create(frame, settings, url);
 #endif
+    printf("DOMI::createDocument() (13)\n");
 
     if (frame && frame->loader().client().shouldAlwaysUsePluginDocument(contentType))
         return PluginDocument::create(*frame, url);
+    printf("DOMI::createDocument() (14)\n");
 
     // The following is the relatively costly lookup that requires initializing the plug-in database.
     if (frame && frame->page()) {
+    printf("DOMI::createDocument() (15)\n");
         auto allowedPluginTypes = frame->arePluginsEnabled()
             ? PluginData::AllPlugins : PluginData::OnlyApplicationPlugins;
+    printf("DOMI::createDocument() (16)\n");
         if (frame->page()->pluginData().supportsWebVisibleMimeType(contentType, allowedPluginTypes))
             return PluginDocument::create(*frame, url);
+    printf("DOMI::createDocument() (17)\n");
     }
+    printf("DOMI::createDocument() (18)\n");
 
     // Items listed here, after the plug-in checks, can be overridden by plug-ins.
     // For example, plug-ins can take over support for PDF or SVG.
     if (frame && isImage)
         return ImageDocument::create(*frame, url);
+    printf("DOMI::createDocument() (19)\n");
     if (MIMETypeRegistry::isTextMIMEType(contentType))
         return TextDocument::create(frame, settings, url, documentIdentifier);
+    printf("DOMI::createDocument() (20)\n");
     if (equalLettersIgnoringASCIICase(contentType, "image/svg+xml"_s))
         return SVGDocument::create(frame, settings, url);
+    printf("DOMI::createDocument() (21)\n");
     if (MIMETypeRegistry::isXMLMIMEType(contentType)) {
+    printf("DOMI::createDocument() (22)\n");
         auto document = XMLDocument::create(frame, settings, url);
+    printf("DOMI::createDocument() (23)\n");
         document->overrideMIMEType(contentType);
+    printf("DOMI::createDocument() (24)\n");
         return document;
     }
+    printf("DOMI::createDocument() (25)\n");
 
     return HTMLDocument::create(frame, settings, url, documentIdentifier);
 }

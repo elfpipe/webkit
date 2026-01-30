@@ -34,14 +34,18 @@ QWebFrameData::QWebFrameData(WebCore::Page* parentPage, WebCore::HTMLFrameOwnerE
     , ownerElement(ownerFrameElement)
     , page(parentPage)
 {
+    printf("QWebFrameData (1)\n");
     // mainframe is already created in WebCore::Page, just use it.
     if (!ownerElement) {
         frame = &downcast<WebCore::LocalFrame>(parentPage->mainFrame());
     } else {
         frame = LocalFrame::createSubframe(*page, makeUniqueRef<FrameLoaderClientQt>(), WebCore::FrameIdentifier::generate(), *ownerElement);
     }
+    printf("QWebFrameData (2)\n");
     frameLoaderClient = static_cast<FrameLoaderClientQt*>(&frame->loader().client());
+    printf("QWebFrameData (3)\n");
 
     // FIXME: All of the below should probably be moved over into WebCore
     frame->tree().setSpecifiedName(AtomString(String(name)));
+    printf("QWebFrameData (4)\n");
 }

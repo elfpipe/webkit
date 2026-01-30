@@ -97,7 +97,9 @@ Ref<HTMLDocument> HTMLDocument::createSynthesizedDocument(LocalFrame& frame, con
 HTMLDocument::HTMLDocument(LocalFrame* frame, const Settings& settings, const URL& url, ScriptExecutionContextIdentifier documentIdentifier, DocumentClasses documentClasses, OptionSet<ConstructionFlag> constructionFlags)
     : Document(frame, settings, url, documentClasses | DocumentClasses(DocumentClass::HTML), constructionFlags, documentIdentifier)
 {
+    printf("*new HTMLDoc() (1)\n");
     clearXMLVersion();
+    printf("*new HTMLDoc() (2)\n");
 }
 
 HTMLDocument::~HTMLDocument() = default;

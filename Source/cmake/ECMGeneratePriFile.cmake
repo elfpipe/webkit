@@ -239,11 +239,12 @@ QT.${PRI_TARGET_BASENAME}.qml =
 QT.${PRI_TARGET_BASENAME}.frameworks = ${PRI_TARGET_FRAMEWORKS}
 QT.${PRI_TARGET_BASENAME}.module_config = v2 ${PRI_TARGET_CONFIG}
 QT_MODULES += ${PRI_TARGET_QT_MODULES}
-QMAKE_LIBS_PRIVATE += ${PRI_TARGET_EXTRA_LIBS}
+QMAKE_LIBS_PRIVATE += -L/qt6-amiga/lib ${PRI_TARGET_EXTRA_LIBS} -lwebpdemux -lwebp -lPAL -lharfbuzz-icu -lsqlite3 -lpthread -licui18n -licuuc -licudata -latomic
 QMAKE_RPATHDIR += ${PRI_TARGET_RPATH}
 "
   )
 
+# AMIGA
 
 endfunction()
 

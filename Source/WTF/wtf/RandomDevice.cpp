@@ -63,7 +63,19 @@ NEVER_INLINE NO_RETURN_DUE_TO_CRASH static void crashUnableToReadFromURandom()
 }
 #endif
 
-#if !OS(DARWIN) && !OS(FUCHSIA) && !OS(WINDOWS)
+#ifdef __amigaos4__
+RandomDevice::RandomDevice()
+{
+    int ret = open("RANDOM:", O_RDONLY, 0);
+    if(ret >= 0) {
+        m_fd = ret;
+        printf("Hey, we have some random stuff in our hands...!\n");
+    } else {
+        printf("Hey, we have no random stuff whatsoever... Now we don't know what to do...!\n");
+        crashUnableToOpenURandom(); // We need /dev/urandom for this API to work...
+    }
+}
+#elif !OS(DARWIN) && !OS(FUCHSIA) && !OS(WINDOWS)
 RandomDevice::RandomDevice()
 {
     int ret = 0;

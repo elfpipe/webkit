@@ -108,12 +108,18 @@ if (QT_ORIGIN_RPATH)
         if (ENABLE_DATABASE_PROCESS)
             list(APPEND WEBKIT_EXECUTABLES DatabaseProcess)
         endif ()
-        set_target_properties(${WEBKIT_EXECUTABLES} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
-        set_target_properties(qmlwebkitplugin PROPERTIES INSTALL_RPATH "\$ORIGIN/../../lib")
-        set_target_properties(qmlwebkitexperimentalplugin PROPERTIES INSTALL_RPATH "\$ORIGIN/../../../lib")
+        # For Amiga, use the global CMAKE_INSTALL_RPATH instead of per-target settings
+        if (NOT AMIGA)
+            set_target_properties(${WEBKIT_EXECUTABLES} PROPERTIES INSTALL_RPATH "\$ORIGIN/../lib")
+            set_target_properties(qmlwebkitplugin PROPERTIES INSTALL_RPATH "\$ORIGIN/../../lib")
+            set_target_properties(qmlwebkitexperimentalplugin PROPERTIES INSTALL_RPATH "\$ORIGIN/../../../lib")
+        endif ()
     endif ()
 
-    set_target_properties(${WEBKIT_SHARED_LIBRARY_TARGETS} PROPERTIES INSTALL_RPATH "\$ORIGIN")
+    # For Amiga, use the global CMAKE_INSTALL_RPATH instead of per-target settings
+    if (NOT AMIGA)
+        set_target_properties(${WEBKIT_SHARED_LIBRARY_TARGETS} PROPERTIES INSTALL_RPATH "\$ORIGIN")
+    endif ()
 endif ()
 
 set(QTWEBKIT_PACKAGE_INIT "

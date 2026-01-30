@@ -280,7 +280,7 @@ WTF_EXPORT_PRIVATE bool WTFIsDebuggerAttached(void);
     WTFBreakpointTrapUnderConstexprContext(); \
     __builtin_unreachable(); \
 } while (0)
-#elif !ENABLE(DEVELOPER_MODE) && !OS(DARWIN)
+#elif !ENABLE(DEVELOPER_MODE) && !OS(DARWIN) && !defined(__amigaos4__)
 #ifdef __cplusplus
 #define CRASH() std::abort()
 #define CRASH_UNDER_CONSTEXPR_CONTEXT() WTFBreakpointTrapUnderConstexprContext()

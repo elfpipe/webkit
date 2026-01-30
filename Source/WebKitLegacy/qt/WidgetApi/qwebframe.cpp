@@ -192,10 +192,13 @@ QWebFrame::QWebFrame(QWebPage *parentPage)
     : QObject(parentPage)
     , d(new QWebFramePrivate)
 {
+    printf("QWebFrame create...\n");
     d->page = parentPage;
     d->q = this;
+    printf("init :\n");
     d->init(/*page adapter*/ parentPage->handle());
-
+    printf("QWebFrame created!\n");
+    
 #if ENABLE(ORIENTATION_EVENTS) && HAVE(QTSENSORS)
     connect(&d->m_orientation, SIGNAL(readingChanged()), this, SLOT(_q_orientationChanged()));
     d->m_orientation.start();
