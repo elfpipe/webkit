@@ -442,7 +442,7 @@ Visitor<F...> makeVisitor(F... f)
 }
 
 template<class V, class... F>
-auto switchOn(V&& v, F&&... f) -> decltype(std::visit(makeVisitor(std::forward<F>(f)...), std::forward<V>(v)))
+auto switchOn(V&& v, F&&... f) -> decltype(auto)
 {
     return std::visit(makeVisitor(std::forward<F>(f)...), std::forward<V>(v));
 }

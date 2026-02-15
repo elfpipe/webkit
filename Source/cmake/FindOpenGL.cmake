@@ -51,6 +51,11 @@ This will define the following variables in your project:
 #  - Make EGL an optional component here, remove FindEGL.cmake.
 #  - Consider whether FindGLES2.cmake could be moved here as well.
 
+if(AMIGA)
+    set (OpenGL_FOUND TRUE)
+    return()
+endif()
+
 find_package(PkgConfig QUIET)
 pkg_check_modules(PC_OPENGL IMPORTED_TARGET opengl)
 

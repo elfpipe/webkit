@@ -109,6 +109,7 @@ JSBigInt* JSBigInt::tryCreateZero(VM& vm)
 inline JSBigInt* JSBigInt::createWithLength(JSGlobalObject* nullOrGlobalObjectForOOM, VM& vm, unsigned length)
 {
     if (UNLIKELY(length > maxLength)) {
+        printf("BigInt generated from this operation is too big (error 1)\n");  
         if (nullOrGlobalObjectForOOM) {
             auto scope = DECLARE_THROW_SCOPE(vm);
             throwOutOfMemoryError(nullOrGlobalObjectForOOM, scope, "BigInt generated from this operation is too big"_s);
@@ -119,6 +120,7 @@ inline JSBigInt* JSBigInt::createWithLength(JSGlobalObject* nullOrGlobalObjectFo
     ASSERT(length <= maxLength);
     void* data = vm.primitiveGigacageAuxiliarySpace().allocate(vm, length * sizeof(Digit), nullptr, AllocationFailureMode::ReturnNull);
     if (UNLIKELY(!data)) {
+        printf("BigInt generated from this operation is too big (error 2)\n");
         if (nullOrGlobalObjectForOOM) {
             auto scope = DECLARE_THROW_SCOPE(vm);
             throwOutOfMemoryError(nullOrGlobalObjectForOOM, scope);

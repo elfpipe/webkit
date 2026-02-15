@@ -326,7 +326,7 @@ void WTFPrintBacktrace(void** stack, int size)
 #if !defined(NDEBUG) || !(OS(DARWIN) || PLATFORM(PLAYSTATION))
 void WTFCrash()
 {
-    WTFReportBacktrace();
+    // WTFReportBacktrace();
 #if ASAN_ENABLED
     __builtin_trap();
 #else

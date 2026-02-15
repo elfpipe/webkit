@@ -1,0 +1,45 @@
+        case R_PPC_REL24:
+        case R_PPC_LOCAL24PC:
+            lprintf(handle, 5, "R_PPC_REL24\n");
+            pS += rela->r_addend;
+            {
+                LONG displacement = (LONG)pS - (LONG)pAbsTarget;
+                if (displacement < -33554432 || displacement > 33554431)
+                {
+                    // void *trampoline = Elf32_GetTrampoline(handle, pS, pAbsTarget);
+                    // if (trampoline)
+                    // {
+                    //     displacement = (LONG)trampoline - (LONG)pAbsTarget;
+                    // }
+                    // else
+                    {
+                        IExec->DebugPrintF("[elf]*** ERROR: R_PPC_REL24/LOCAL24PC overflow and no trampoline space: symbol %s, displacement %ld (0x%08lx)\n",
+                                           symname ? symname : "(unknown)", displacement, displacement);
+                    }
+                }
+                *(ULONG *)pTarget = (*(ULONG *)pTarget & 0xFC000003)
+                    | (displacement & 0x03fffffc);
+            }
+            break;
+        case R_PPC_PLTREL24:
+        	lprintf(handle, 5, "R_PPC_PLTREL24\n");
+            pS += rela->r_addend;
+            {
+                LONG displacement = (LONG)pS - (LONG)pAbsTarget;
+                if (displacement < -33554432 || displacement > 33554431)
+                {
+                    // void *trampoline = Elf32_GetTrampoline(handle, pS, pAbsTarget);
+                    // if (trampoline)
+                    // {
+                    //     displacement = (LONG)trampoline - (LONG)pAbsTarget;
+                    // }
+                    // else
+                    {
+                        IExec->DebugPrintF("[elf]*** ERROR: R_PPC_PLTREL24 overflow and no trampoline space: symbol %s, displacement %ld (0x%08lx)\n",
+                                           symname ? symname : "(unknown)", displacement, displacement);
+                    }
+                }
+                *(uint32 *)pTarget = (*(uint32 *)pTarget & 0xFC000003)
+                    | (displacement & 0x03FFFFFC);
+            }
+        	break;

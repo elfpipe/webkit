@@ -58,11 +58,20 @@ public:
             return locale;
         });
 
+        #ifdef __amigaos4__
+            char *path = getenv("ICU_DATA");
+            if(strlen(path))
+                u_setDataDirectory(path);
+            else
+                u_setDataDirectory("/qt6-amiga/icu/79.0.1/");
+        #endif
+        
         UErrorCode status = U_ZERO_ERROR;
         m_iterator = ubrk_open(type, localeWithOptionalBreakKeyword.string().utf8().data(), nullptr, 0, &status);
         if (!m_iterator || U_FAILURE(status)) {
             status = U_ZERO_ERROR;
             m_iterator = ubrk_open(type, "", nullptr, 0, &status); // There's no reason for this to ever fail, unless there's an allocation failure, in which case we _should_ crash; that's the behavior of our allocators.
+            printf("ubrk_open failed: %s (%d)\n", u_errorName(status), (int)status);
         }
         RELEASE_ASSERT(m_iterator);
         RELEASE_ASSERT(U_SUCCESS(status));

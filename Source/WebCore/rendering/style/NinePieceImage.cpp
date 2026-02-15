@@ -61,22 +61,39 @@ NinePieceImage::NinePieceImage(RefPtr<StyleImage>&& image, LengthBox imageSlices
 {
 }
 
+static inline LayoutUnit valueForLengthLocal(const Length& length, LayoutUnit maximumValue)
+{
+    switch (length.type()) {
+    case LengthType::Fixed:
+    case LengthType::Percent:
+    case LengthType::Calculated:
+        return minimumValueForLength(length, maximumValue);
+    case LengthType::FillAvailable:
+    case LengthType::Auto:
+    case LengthType::Normal:
+        return maximumValue;
+    default:
+        ASSERT_NOT_REACHED();
+        return 0;
+    }
+}
+
 LayoutUnit NinePieceImage::computeSlice(Length length, LayoutUnit width, LayoutUnit slice, LayoutUnit extent)
 {
     if (length.isRelative())
         return LayoutUnit(length.value() * width);
     if (length.isAuto())
         return slice;
-    return valueForLength(length, extent);
+    return valueForLengthLocal(length, extent);
 }
 
 LayoutBoxExtent NinePieceImage::computeSlices(const LayoutSize& size, const LengthBox& lengths, int scaleFactor)
 {
     return {
-        std::min(size.height(), valueForLength(lengths.top(), size.height())) * scaleFactor,
-        std::min(size.width(), valueForLength(lengths.right(), size.width()))  * scaleFactor,
-        std::min(size.height(), valueForLength(lengths.bottom(), size.height())) * scaleFactor,
-        std::min(size.width(), valueForLength(lengths.left(), size.width()))  * scaleFactor
+        std::min(size.height(), valueForLengthLocal(lengths.top(), size.height())) * scaleFactor,
+        std::min(size.width(), valueForLengthLocal(lengths.right(), size.width()))  * scaleFactor,
+        std::min(size.height(), valueForLengthLocal(lengths.bottom(), size.height())) * scaleFactor,
+        std::min(size.width(), valueForLengthLocal(lengths.left(), size.width()))  * scaleFactor
     };
 }
 

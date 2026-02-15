@@ -42,6 +42,11 @@
 #include <unistd.h>
 #endif
 
+#ifdef __amigaos4__
+#include <proto/exec.h>
+#include <proto/dos.h>
+#endif
+
 #endif
 
 namespace WTF {
@@ -93,6 +98,13 @@ StackBounds StackBounds::newThreadStackBounds(PlatformThreadHandle thread)
     void* bound = nullptr;
     size_t stackSize = 0;
 
+#ifdef __amigaos4__
+    if(thread == pthread_self()) {
+        struct Process *proc = (struct Process *)IExec->FindTask(NULL);
+        bound = proc->pr_Task.tc_SPLower;
+        stackSize = (char*)proc->pr_Task.tc_SPUpper - (char*)proc->pr_Task.tc_SPLower;
+    }
+#else
     pthread_attr_t sattr;
     pthread_attr_init(&sattr);
 #if HAVE(PTHREAD_NP_H) || OS(NETBSD)
@@ -106,8 +118,10 @@ StackBounds StackBounds::newThreadStackBounds(PlatformThreadHandle thread)
     UNUSED_PARAM(rc);
     ASSERT(bound);
     pthread_attr_destroy(&sattr);
+#endif
     void* origin = static_cast<char*>(bound) + stackSize;
     // pthread_attr_getstack's bound is the lowest accessible pointer of the stack.
+    printf("StackBounds::newThreadStackBounds (%p) %p %p\n", (void*)thread, (void*)origin, (void*)bound);
     return StackBounds { origin, bound };
 }
 

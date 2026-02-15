@@ -39,7 +39,7 @@
 
 void WTFGetBacktrace(void** stack, int* size)
 {
-#if HAVE(BACKTRACE)
+#if HAVE(BACKTRACE) || !defined(__amigaos4__)
     *size = backtrace(stack, *size);
 #elif OS(WINDOWS)
     *size = RtlCaptureStackBackTrace(0, *size, stack, nullptr);

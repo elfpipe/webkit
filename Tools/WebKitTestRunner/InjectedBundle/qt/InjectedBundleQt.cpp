@@ -47,7 +47,7 @@ void InjectedBundle::platformInitialize(WKTypeRef)
     if (qgetenv("QT_WEBKIT2_DEBUG") == "1")
         return;
 
-    WTFInstallReportBacktraceOnCrashHook();
+    // WTFInstallReportBacktraceOnCrashHook();
 }
 
 } // namespace WTR

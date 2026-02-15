@@ -28,7 +28,7 @@
 namespace WTF {
 
 #if defined(NDEBUG) && COMPILER(GCC_COMPATIBLE) \
-    && (CPU(X86_64) || CPU(X86) || CPU(ARM64) || CPU(ARM_THUMB2) || CPU(ARM_TRADITIONAL))
+    && (CPU(X86_64) || CPU(X86) || CPU(ARM64) || CPU(ARM_THUMB2) || CPU(ARM_TRADITIONAL) || CPU(PPC) || CPU(PPC64))
 
 // We can only use the inline asm implementation on release builds because it
 // needs to be inlinable in order to be correct.
@@ -45,6 +45,9 @@ ALWAYS_INLINE void* currentStackPointer()
     stackPointer = reinterpret_cast<void*>(stackPointerRegister);
 #elif CPU(ARM64) || CPU(ARM_THUMB2) || CPU(ARM_TRADITIONAL)
     __asm__ volatile ("mov %0, sp" : "=r"(stackPointer) ::);
+#elif CPU(PPC) || CPU(PPC64)
+    // Get the frame pointer, which is usually stored in r1 on PowerPC
+    __asm__ volatile("mr %0, 1" : "=r"(stackPointer) ::);
 #endif
     return stackPointer;
 }

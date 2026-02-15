@@ -9,6 +9,24 @@
 cmake_minimum_required(VERSION 3.16)
 project(WebKit)
 
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "AmigaOS")    
+    # Should this Qt be static or dynamically linked?
+    option(BUILD_SHARED_LIBS "Build Qt statically or dynamically" ON)
+    set(QT_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+else()
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force static build" FORCE)
+    set(QT_BUILD_SHARED_LIBS OFF CACHE BOOL "Force static build" FORCE)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+    set(CMAKE_SHARED_LIBRARY_SUFFIX ".a")
+    set(CMAKE_EXTRA_SHARED_LIBRARY_SUFFIXES "")
+endif()
+
+if(AMIGA)
+    set(CMAKE_DL_LIBS "")
+    set(WTF_CPU_PPC 1)
+    set(WTF_CPU_KNOWN 1)
+endif()
+
 # Remove this cmake_policy() after upgrading cmake_minimum_required() to 3.20.
 if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.20")
     cmake_policy(SET CMP0116 OLD)

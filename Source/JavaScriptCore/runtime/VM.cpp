@@ -233,15 +233,21 @@ VM::VM(VMType vmType, HeapType heapType, WTF::RunLoop* runLoop, bool* success)
     , m_builtinExecutables(makeUnique<BuiltinExecutables>(*this))
     , m_syncWaiter(adoptRef(*new Waiter(this)))
 {
+    printf("VM created\n");
     if (UNLIKELY(vmCreationShouldCrash || g_jscConfig.vmCreationDisallowed))
         CRASH_WITH_EXTRA_SECURITY_IMPLICATION_AND_INFO(VMCreationDisallowed, "VM creation disallowed"_s, 0x4242424220202020, 0xbadbeef0badbeef, 0x1234123412341234, 0x1337133713371337);
-
+    printf("VM created 2\n");
     VMInspector::instance().add(this);
 
+    printf("VM created 2.5\n");
     updateSoftReservedZoneSize(Options::softReservedZoneSize());
+
+    printf("VM created 2.6\n");
     setLastStackTop(Thread::current());
+    printf("VM created 2.7\n");
     stringSplitIndice.reserveInitialCapacity(256);
 
+    printf("VM created 3\n");
     JSRunLoopTimer::Manager::shared().registerVM(*this);
 
     // Need to be careful to keep everything consistent here
@@ -250,10 +256,10 @@ VM::VM(VMType vmType, HeapType heapType, WTF::RunLoop* runLoop, bool* success)
     structureStructure.setWithoutWriteBarrier(Structure::createStructure(*this));
     structureRareDataStructure.setWithoutWriteBarrier(StructureRareData::createStructure(*this, nullptr, jsNull()));
     stringStructure.setWithoutWriteBarrier(JSString::createStructure(*this, nullptr, jsNull()));
-
+    printf("VM created 4\n");
     smallStrings.initializeCommonStrings(*this);
     numericStrings.initializeSmallIntCache(*this);
-
+    printf("VM created 5\n");
     propertyNames = new CommonIdentifiers(*this);
     propertyNameEnumeratorStructure.setWithoutWriteBarrier(JSPropertyNameEnumerator::createStructure(*this, nullptr, jsNull()));
     getterSetterStructure.setWithoutWriteBarrier(GetterSetter::createStructure(*this, nullptr, jsNull()));
@@ -269,7 +275,7 @@ VM::VM(VMType vmType, HeapType heapType, WTF::RunLoop* runLoop, bool* success)
     regExpStructure.setWithoutWriteBarrier(RegExp::createStructure(*this, nullptr, jsNull()));
     symbolStructure.setWithoutWriteBarrier(Symbol::createStructure(*this, nullptr, jsNull()));
     symbolTableStructure.setWithoutWriteBarrier(SymbolTable::createStructure(*this, nullptr, jsNull()));
-
+    printf("VM created 6\n");
     immutableButterflyStructures[arrayIndexFromIndexingType(CopyOnWriteArrayWithInt32) - NumberOfIndexingShapes].setWithoutWriteBarrier(JSImmutableButterfly::createStructure(*this, nullptr, jsNull(), CopyOnWriteArrayWithInt32));
     Structure* copyOnWriteArrayWithContiguousStructure = JSImmutableButterfly::createStructure(*this, nullptr, jsNull(), CopyOnWriteArrayWithContiguous);
     immutableButterflyStructures[arrayIndexFromIndexingType(CopyOnWriteArrayWithDouble) - NumberOfIndexingShapes].setWithoutWriteBarrier(Options::allowDoubleShape() ? JSImmutableButterfly::createStructure(*this, nullptr, jsNull(), CopyOnWriteArrayWithDouble) : copyOnWriteArrayWithContiguousStructure);
@@ -296,7 +302,7 @@ VM::VM(VMType vmType, HeapType heapType, WTF::RunLoop* runLoop, bool* success)
     hashMapBucketSetStructure.setWithoutWriteBarrier(HashMapBucket<HashMapBucketDataKey>::createStructure(*this, nullptr, jsNull()));
     hashMapBucketMapStructure.setWithoutWriteBarrier(HashMapBucket<HashMapBucketDataKeyValue>::createStructure(*this, nullptr, jsNull()));
     bigIntStructure.setWithoutWriteBarrier(JSBigInt::createStructure(*this, nullptr, jsNull()));
-
+printf("VM created 7\n");
     // Eagerly initialize constant cells since the concurrent compiler can access them.
     if (Options::useJIT()) {
         sentinelMapBucket();
